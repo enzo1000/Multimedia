@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.lex": "lex",
+        "cmath": "cpp",
+        "complex": "cpp",
+        "__node_handle": "cpp"
+    }
+}
