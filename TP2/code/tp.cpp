@@ -66,11 +66,13 @@ Mesh mesh;
 //Mesh to generate
 Mesh unit_sphere;
 Mesh unit_cylinder;
+Mesh unit_conne;
 
 bool display_normals;
 bool display_loaded_mesh;
 bool display_unit_sphere;
 bool display_cylinder;
+bool display_conne;
 DisplayMode displayMode;
 
 // -------------------------------------------
@@ -296,6 +298,7 @@ void init () {
     display_normals = false;
     display_unit_sphere = false;
     display_cylinder = false;
+    display_conne = false;
     display_loaded_mesh = true;
 
     glLineWidth(1.);
@@ -405,6 +408,11 @@ void draw () {
         drawTriangleMesh(unit_cylinder);
     }
 
+    if (display_conne) {
+        glColor3f(1,1,0);
+        drawTriangleMesh(unit_conne);
+    }
+
     if( display_loaded_mesh ){
         glColor3f(0.8,0.8,1);
         drawTriangleMesh(mesh);
@@ -422,6 +430,9 @@ void draw () {
         
         if( display_cylinder)
             drawTriangleMesh(unit_cylinder);
+
+        if( display_conne )
+            drawTriangleMesh(unit_conne);
 
         if( display_loaded_mesh )
             drawTriangleMesh(mesh);
@@ -486,6 +497,7 @@ void key (unsigned char keyPressed, int x, int y) {
     case '2': //Toggle unit sphere mesh display
         display_unit_sphere = !display_unit_sphere;
         display_cylinder = !display_cylinder;
+        display_conne = !display_conne;
         break;
 
     case '-':
@@ -565,6 +577,7 @@ void setCylinder(Mesh & o_mesh, float r, float h, float angle, int nX) {
     float n1, n2, n3;
 
     o_mesh.vertices.push_back(Vec3(0, 0, 0));
+    o_mesh.normals.push_back(Vec3(0, 0, 0));
     for(float teta = 0; teta <= 2*pi ; teta += (2*pi)/nX) {
         x = r*cos(teta);
         y = r*sin(teta);
@@ -574,6 +587,7 @@ void setCylinder(Mesh & o_mesh, float r, float h, float angle, int nX) {
     }
     
     o_mesh.vertices.push_back(Vec3(0, 0, h));
+    o_mesh.normals.push_back(Vec3(0, 0, h));
     for(float teta = 0; teta <= 2*pi ; teta += (2*pi)/nX) { 
         x = r*cos(teta);
         y = r*sin(teta);
@@ -602,19 +616,30 @@ void setCylinder(Mesh & o_mesh, float r, float h, float angle, int nX) {
     }
     o_mesh.triangles.push_back(Triangle(nX+1, nX*2+1, nX+2));
 
-    
     for (int i=1; i <= nX-1 ; i++) {
-        //if (i != nX+1 || i != nX) {
-            n1 = i;
-            n2 = i+nX;
-            n3 = i+nX + 1;
-            n4 = i+1;
+        n1 = i;
+        n2 = i+nX;
+        n3 = i+nX + 1;
+        n4 = i+1;
 
+        if (n1 == nX+1 || n2 == nX+1|| n3 == nX+1 || n4 == nX+1) {
+            //o_mesh.triangles.push_back(Triangle(n1, n3, n2));
+            o_mesh.triangles.push_back(Triangle(n1, n4, n3));
+        } else {
             o_mesh.triangles.push_back(Triangle(n1, n3, n2));
             o_mesh.triangles.push_back(Triangle(n1, n4, n3));
-        //}
+        }
+        o_mesh.triangles.push_back(Triangle(nX, nX*2+1, nX*2));
+        o_mesh.triangles.push_back(Triangle(nX, 1, nX*2+1));
+        o_mesh.triangles.push_back(Triangle(1, nX+2, nX*2+1));
     }
-    ////////o_mesh.triangles.push_back(Triangle());
+}
+
+void setConne(Mesh & o_mesh, float r, float h, float angle, int nX) {
+    float pi = M_PI;
+
+    
+
 }
 
 int main (int argc, char ** argv) {
@@ -648,6 +673,7 @@ int main (int argc, char ** argv) {
     float angle = 0.5;
 
     setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
+    setConne(unit_conne, rayon, hauteur, angle, Nx);
     //setUnitSphere(unit_sphere, Nx, Ny);   //La méthode que l'on doit écrire
 
     glutMainLoop ();
