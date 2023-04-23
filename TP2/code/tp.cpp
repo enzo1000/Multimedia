@@ -95,6 +95,9 @@ static bool fullScreen = false;
 
 int Nx = 20;
 int Ny = 20;
+float rayon = 1.;
+float hauteur = 2.;
+float angle = 0.5;
 
 void setUnitSphere( Mesh & o_mesh, int nX, int nY)
 {
@@ -158,6 +161,106 @@ void setUnitSphere( Mesh & o_mesh, int nX, int nY)
             o_mesh.triangles.push_back(Triangle(n1, n3, n4));
         }
     }
+}
+
+void setCylinder(Mesh & o_mesh, float r, float h, float angle, int nX) {
+    float pi = M_PI;
+
+    o_mesh.vertices.clear();
+    o_mesh.normals.clear();
+    o_mesh.triangles.clear();
+
+    float x, y;
+    float n1, n2, n3, n4;
+
+    o_mesh.vertices.push_back(Vec3(0, 0, 0));
+    o_mesh.normals.push_back(Vec3(0, 0, 0));
+    for(float teta = 0; teta <= 2*pi ; teta += (2*pi)/nX) {
+        x = r*cos(teta);
+        y = r*sin(teta);
+        
+        o_mesh.vertices.push_back(Vec3(x, y, 0));
+        o_mesh.normals.push_back(Vec3(x, y, 0));
+    }
+    
+    o_mesh.vertices.push_back(Vec3(0, 0, h));
+    o_mesh.normals.push_back(Vec3(0, 0, h));
+    for(float teta = 0; teta <= 2*pi ; teta += (2*pi)/nX) { 
+        x = r*cos(teta);
+        y = r*sin(teta);
+
+        o_mesh.vertices.push_back(Vec3(x, y, h));
+        o_mesh.normals.push_back(Vec3(x, y, h));
+    }
+
+    o_mesh.triangles.clear();
+    
+    o_mesh.triangles.push_back(Triangle(0, 1, nX));
+    for (int i=0; i <= nX-2; i++) {
+        n1 = 0;
+        n2 = i+1;
+        n3 = i+2;
+
+        o_mesh.triangles.push_back(Triangle(n1, n3, n2));
+    }
+
+    for (int i=nX+1; i <= nX*2-1; i++) {
+        n1 = nX+1;
+        n2 = i+1;
+        n3 = i+2;
+
+        o_mesh.triangles.push_back(Triangle(n1, n2, n3));
+    }
+    o_mesh.triangles.push_back(Triangle(nX+1, nX*2+1, nX+2));
+
+    for (int i=1; i <= nX-1 ; i++) {
+        n1 = i;
+        n2 = i+nX;
+        n3 = i+nX + 1;
+        n4 = i+1;
+
+        if (n1 == nX+1 || n2 == nX+1|| n3 == nX+1 || n4 == nX+1) {
+            //o_mesh.triangles.push_back(Triangle(n1, n3, n2));
+            o_mesh.triangles.push_back(Triangle(n1, n4, n3));
+        } else {
+            o_mesh.triangles.push_back(Triangle(n1, n3, n2));
+            o_mesh.triangles.push_back(Triangle(n1, n4, n3));
+        }
+        o_mesh.triangles.push_back(Triangle(nX, nX*2+1, nX*2));
+        o_mesh.triangles.push_back(Triangle(nX, 1, nX*2+1));
+        o_mesh.triangles.push_back(Triangle(1, nX+2, nX*2+1));
+    }
+}
+
+void setConne(Mesh & o_mesh, float r, float h, float angle, int nX) {
+    float pi = M_PI;
+    float n1, n2, n3, n4;
+
+    o_mesh.vertices.clear();
+    o_mesh.normals.clear();
+    o_mesh.triangles.clear();
+
+    o_mesh.vertices.push_back(Vec3(0, 0, h));
+    o_mesh.normals.push_back(Vec3(0, 0, h));
+    for (float i = 0; i < 2*pi ; i += (2*pi)/nX) {
+        o_mesh.vertices.push_back(Vec3(r*cos(i), r*sin(i), h));
+        o_mesh.normals.push_back(Vec3(r*cos(i), r*sin(i), h));
+    }
+    o_mesh.vertices.push_back(Vec3(0, 0, 0));
+    o_mesh.normals.push_back(Vec3(0, 0, 0));
+    
+    
+    for (int i = 1; i <= nX - 1; i++) {
+        n1 = 0;
+        n2 = i;
+        n3 = i+1;
+        n4 = nX + 1;
+
+        o_mesh.triangles.push_back(Triangle(n1, n2, n3));
+        o_mesh.triangles.push_back(Triangle(n2, n4, n3));
+    }
+    o_mesh.triangles.push_back(Triangle(0, nX, 1));
+    o_mesh.triangles.push_back(Triangle(nX, nX+1, 1));
 }
 
 bool saveOFF( const std::string & filename ,
@@ -504,12 +607,16 @@ void key (unsigned char keyPressed, int x, int y) {
         Nx--;
         Ny--;
         //setUnitSphere(unit_sphere, Nx, Ny);   //La méthode que l'on doit écrire
+        //setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
+        setConne(unit_conne, rayon, hauteur, angle, Nx);
         break;
 
     case '+':
         Nx++;
         Ny++;
         //setUnitSphere(unit_sphere, Nx, Ny);   //La méthode que l'on doit écrire
+        //setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
+        setConne(unit_conne, rayon, hauteur, angle, Nx);
         break;
 
     default:
@@ -566,81 +673,6 @@ void reshape(int w, int h) {
     camera.resize (w, h);
 }
 
-void setCylinder(Mesh & o_mesh, float r, float h, float angle, int nX) {
-    float pi = M_PI;
-
-    o_mesh.vertices.clear();
-    o_mesh.normals.clear();
-    o_mesh.triangles.clear();
-
-    float x, y;
-    float n1, n2, n3;
-
-    o_mesh.vertices.push_back(Vec3(0, 0, 0));
-    o_mesh.normals.push_back(Vec3(0, 0, 0));
-    for(float teta = 0; teta <= 2*pi ; teta += (2*pi)/nX) {
-        x = r*cos(teta);
-        y = r*sin(teta);
-        
-        o_mesh.vertices.push_back(Vec3(x, y, 0));
-        o_mesh.normals.push_back(Vec3(x, y, 0));
-    }
-    
-    o_mesh.vertices.push_back(Vec3(0, 0, h));
-    o_mesh.normals.push_back(Vec3(0, 0, h));
-    for(float teta = 0; teta <= 2*pi ; teta += (2*pi)/nX) { 
-        x = r*cos(teta);
-        y = r*sin(teta);
-
-        o_mesh.vertices.push_back(Vec3(x, y, h));
-        o_mesh.normals.push_back(Vec3(x, y, h));
-    }
-
-    o_mesh.triangles.clear();
-    
-    o_mesh.triangles.push_back(Triangle(0, 1, nX));
-    for (int i=0; i <= nX-2; i++) {
-        n1 = 0;
-        n2 = i+1;
-        n3 = i+2;
-
-        o_mesh.triangles.push_back(Triangle(n1, n3, n2));
-    }
-
-    for (int i=nX+1; i <= nX*2-1; i++) {
-        n1 = nX+1;
-        n2 = i+1;
-        n3 = i+2;
-
-        o_mesh.triangles.push_back(Triangle(n1, n2, n3));
-    }
-    o_mesh.triangles.push_back(Triangle(nX+1, nX*2+1, nX+2));
-
-    for (int i=1; i <= nX-1 ; i++) {
-        n1 = i;
-        n2 = i+nX;
-        n3 = i+nX + 1;
-        n4 = i+1;
-
-        if (n1 == nX+1 || n2 == nX+1|| n3 == nX+1 || n4 == nX+1) {
-            //o_mesh.triangles.push_back(Triangle(n1, n3, n2));
-            o_mesh.triangles.push_back(Triangle(n1, n4, n3));
-        } else {
-            o_mesh.triangles.push_back(Triangle(n1, n3, n2));
-            o_mesh.triangles.push_back(Triangle(n1, n4, n3));
-        }
-        o_mesh.triangles.push_back(Triangle(nX, nX*2+1, nX*2));
-        o_mesh.triangles.push_back(Triangle(nX, 1, nX*2+1));
-        o_mesh.triangles.push_back(Triangle(1, nX+2, nX*2+1));
-    }
-}
-
-void setConne(Mesh & o_mesh, float r, float h, float angle, int nX) {
-    float pi = M_PI;
-
-    
-
-}
 
 int main (int argc, char ** argv) {
     if (argc > 2) {
@@ -668,11 +700,7 @@ int main (int argc, char ** argv) {
 
     openOFF("data/unit_sphere_n.off", mesh.vertices, mesh.normals, mesh.triangles);
 
-    float rayon = 1.;
-    float hauteur = 2.;
-    float angle = 0.5;
-
-    setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
+    //setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
     setConne(unit_conne, rayon, hauteur, angle, Nx);
     //setUnitSphere(unit_sphere, Nx, Ny);   //La méthode que l'on doit écrire
 
