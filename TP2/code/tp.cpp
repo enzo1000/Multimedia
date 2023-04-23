@@ -235,6 +235,7 @@ void setCylinder(Mesh & o_mesh, float r, float h, float angle, int nX) {
 void setConne(Mesh & o_mesh, float r, float h, float angle, int nX) {
     float pi = M_PI;
     float n1, n2, n3, n4;
+    printf("%d\n", nX);
 
     o_mesh.vertices.clear();
     o_mesh.normals.clear();
@@ -248,13 +249,27 @@ void setConne(Mesh & o_mesh, float r, float h, float angle, int nX) {
     }
     o_mesh.vertices.push_back(Vec3(0, 0, 0));
     o_mesh.normals.push_back(Vec3(0, 0, 0));
+    //o_mesh.vertices.push_back(Vec3(0, 0, 0));
+    //o_mesh.normals.push_back(Vec3(0, 0, 0));
     
-    
+    /*
+    Ok, so, why do i add 2 vertices at the end of my conne.
+    I realise that my number of Nx and my number of vertices where,
+    some times, spaces by 2 and somes times by 3.
+    When they were space by 2, the conne could print exactly like we wanted it
+    by when it was space by 3, the "pick" of the conne (its extrimity) could not be reach
+    and all the point connected to the circle (n4 = nX + 1)
+    To Counter that i decided to put 2 points at the same location and to only focus on the second one
+    so even if my first point decided to "fade" I have another one :^)
+    It could be easier to work directly on the o_mesh.vertices.size();
+    */
+
+    printf("max size : %d\n", o_mesh.vertices.size());
     for (int i = 1; i <= nX - 1; i++) {
         n1 = 0;
         n2 = i;
         n3 = i+1;
-        n4 = nX + 1;
+        n4 = o_mesh.vertices.size() - 1;    //was nX + 1 with problem //naw nX + 2 and added to point at the same coord to fix problems
 
         o_mesh.triangles.push_back(Triangle(n1, n2, n3));
         o_mesh.triangles.push_back(Triangle(n2, n4, n3));
@@ -604,8 +619,8 @@ void key (unsigned char keyPressed, int x, int y) {
         break;
 
     case '-':
-        Nx--;
-        Ny--;
+        Nx = abs(Nx - 1);
+        Ny = abs(Ny - 1);
         //setUnitSphere(unit_sphere, Nx, Ny);   //La méthode que l'on doit écrire
         //setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
         setConne(unit_conne, rayon, hauteur, angle, Nx);
