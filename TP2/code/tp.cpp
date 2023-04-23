@@ -193,25 +193,17 @@ void setCylinder(Mesh & o_mesh, float r, float h, float angle, int nX) {
         o_mesh.normals.push_back(Vec3(x, y, h));
     }
 
-    o_mesh.triangles.clear();
+    printf("%d\n", nX);
+    printf("max size : %ld\n", o_mesh.vertices.size());
     
+    //For the up & down circle
     o_mesh.triangles.push_back(Triangle(0, 1, nX));
-    for (int i=0; i <= nX-2; i++) {
-        n1 = 0;
-        n2 = i+1;
-        n3 = i+2;
-
-        o_mesh.triangles.push_back(Triangle(n1, n3, n2));
-    }
-
-    for (int i=nX+1; i <= nX*2-1; i++) {
-        n1 = nX+1;
-        n2 = i+1;
-        n3 = i+2;
-
-        o_mesh.triangles.push_back(Triangle(n1, n2, n3));
-    }
     o_mesh.triangles.push_back(Triangle(nX+1, nX*2+1, nX+2));
+
+    for (int i=0; i <= nX-2; i++) {
+        o_mesh.triangles.push_back(Triangle(0, i+1, i+2));
+        o_mesh.triangles.push_back(Triangle(nX+1, i+nX+2, i+nX+3));
+    }
 
     for (int i=1; i <= nX-1 ; i++) {
         n1 = i;
@@ -264,7 +256,7 @@ void setConne(Mesh & o_mesh, float r, float h, float angle, int nX) {
     It could be easier to work directly on the o_mesh.vertices.size();
     */
 
-    printf("max size : %d\n", o_mesh.vertices.size());
+    printf("max size : %ld\n", o_mesh.vertices.size());
     for (int i = 1; i <= nX - 1; i++) {
         n1 = 0;
         n2 = i;
@@ -622,16 +614,16 @@ void key (unsigned char keyPressed, int x, int y) {
         Nx = abs(Nx - 1);
         Ny = abs(Ny - 1);
         //setUnitSphere(unit_sphere, Nx, Ny);   //La méthode que l'on doit écrire
-        //setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
-        setConne(unit_conne, rayon, hauteur, angle, Nx);
+        setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
+        //setConne(unit_conne, rayon, hauteur, angle, Nx);
         break;
 
     case '+':
         Nx++;
         Ny++;
         //setUnitSphere(unit_sphere, Nx, Ny);   //La méthode que l'on doit écrire
-        //setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
-        setConne(unit_conne, rayon, hauteur, angle, Nx);
+        setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
+        //setConne(unit_conne, rayon, hauteur, angle, Nx);
         break;
 
     default:
@@ -715,8 +707,8 @@ int main (int argc, char ** argv) {
 
     openOFF("data/unit_sphere_n.off", mesh.vertices, mesh.normals, mesh.triangles);
 
-    //setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
-    setConne(unit_conne, rayon, hauteur, angle, Nx);
+    setCylinder(unit_cylinder, rayon, hauteur, angle, Nx);
+    //setConne(unit_conne, rayon, hauteur, angle, Nx);
     //setUnitSphere(unit_sphere, Nx, Ny);   //La méthode que l'on doit écrire
 
     glutMainLoop ();
