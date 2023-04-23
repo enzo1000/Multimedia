@@ -275,7 +275,7 @@ void setConne(Mesh & o_mesh, float r, float h, float angle, int nX) {
         o_mesh.triangles.push_back(Triangle(n2, n4, n3));
     }
     o_mesh.triangles.push_back(Triangle(0, nX, 1));
-    o_mesh.triangles.push_back(Triangle(nX, nX+1, 1));
+    o_mesh.triangles.push_back(Triangle(nX, o_mesh.vertices.size() - 1, 1));
 }
 
 bool saveOFF( const std::string & filename ,
