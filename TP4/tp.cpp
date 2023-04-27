@@ -197,7 +197,8 @@ void updateAnimation (){
     
     //Ajouter des transformation
     //Translation a mettre a jour en utilisant la variable offset
-    Vec3 translation(offset, 0.5*cos(angle),0.); // A mettre à jour
+    //Vec3 translation(offset, 0.5*cos(angle),0.); // A mettre à jour
+    Vec3 translation(offset, 0. ,0.);
 
     //Matrices de rotation
     Mat3 Rx, Ry, Rz;
@@ -228,7 +229,13 @@ void updateAnimation (){
     Mat3 model = Rx*Ry*Rz;
 
     for (unsigned int i = 0; i < V.size() ; i++) {
-        V[i].position = model * (w0n * V0[i].position + w1n * V1[i].position + w2n * V2[i].position) + translation;
+        V[i].position = (w0n * V0[i].position + w1n * V1[i].position + w2n * V2[i].position);
+        V[i].position = Rx * V[i].position;
+        V[i].position += translation;
+        V[i].position = Ry * V[i].position;
+        //V[i].position = (w0n * V0[i].position + w1n * V1[i].position + w2n * V2[i].position);
+        //V[i].position *= Rx;
+        //V[i].position += translation;
     }
 
 
@@ -541,6 +548,18 @@ void key (unsigned char keyPressed, int x, int y) {
     case '?':
     default:
         printUsage ();
+        break;
+    case 'g':
+        //offset -= 0.1f;
+        angle -= 0.1f;
+        if( angle <= 0.f ) angle = (float)M_PI*2.f;
+        updateAnimation();
+        break;
+    case 'G':
+        //offset += 0.1f;
+        angle += 0.1f;
+        if( angle >= (float)M_PI*2.f ) angle = 0.;
+        updateAnimation();
         break;
     }
     setShaderValues ();

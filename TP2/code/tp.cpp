@@ -201,7 +201,7 @@ void setCylinder(Mesh & o_mesh, float r, float h, float angle, int nX) {
     o_mesh.triangles.push_back(Triangle(nX+1, nX*2+1, nX+2));
 
     for (int i=0; i <= nX-2; i++) {
-        o_mesh.triangles.push_back(Triangle(0, i+1, i+2));
+        o_mesh.triangles.push_back(Triangle(0, i+2, i+1));
         o_mesh.triangles.push_back(Triangle(nX+1, i+nX+2, i+nX+3));
     }
 
@@ -247,7 +247,7 @@ void setConne(Mesh & o_mesh, float r, float h, float angle, int nX) {
     /*
     Ok, so, why do i add 2 vertices at the end of my conne.
     I realise that my number of Nx and my number of vertices where,
-    some times, spaces by 2 and somes times by 3.
+    sometimes, spaces by 2 and somes times by 3.
     When they were space by 2, the conne could print exactly like we wanted it
     by when it was space by 3, the "pick" of the conne (its extrimity) could not be reach
     and all the point connected to the circle (n4 = nX + 1)

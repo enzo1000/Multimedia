@@ -41,7 +41,7 @@ void main (void) {
     vec4 Ia = Isa * Ka;
     vec4 I = ambientRef * Ia;
 
-    for (int i = 0; i < 4 ; i++) {  //1 et pas 3 pour la 2. (Il nous faut 1 lumière)
+    for (int i = 1; i < 2 ; i++) {  //1 et pas 3 pour la 2. (Il nous faut 1 lumière)
         if (i != 0) {
             Isa = gl_LightSource[i].ambient;
             Ia = Isa * Ka;
